@@ -1,50 +1,68 @@
-By using a Joi object we can specify highly customizable validation rules in paths, request payloads, and responses.
+Joi provides an expressive api for describing JSON schema, and can be added directly to hapi routes via the ```validate``` portion of a route's configuration.
 
-Create a server exposing a login endpoint and reply with "login successful" when an HTTP POST request is sent to `/login`.
+Joi schema are created by creating an object containing matching key:description pairs. For example: 
 
-The endpoint will accept following payload variables:
+```javascript
 
-```isGuest```       (boolean)
-```username```      (string)
-```accessToken```   (alphanumeric)
-```password```      (alphanumeric)
+var Joi = require('joi');
 
-Validation should consist of following conditions:
+var schema = {
+  name: Joi.string().required(),
+  year: Joi.number()
+};
 
-i)   if ```isGuest``` is false, a ```username``` is required.
-ii)  ```password``` cannot appear together with ```accessToken```.
-iii) if any other parameters than specified above are sent, they should pass the validation.
+```
+
+Joi provides a number of built-in objects, like ```string```, and ```number``` above. It also provides ```object```, ```date```, ```array```, and other logical based operators. Some types even provide commonly used objects, like this:
+
+```javascript
+var Joi = require('joi');
+
+var schema = {
+  email: Joi.string().email(),
+  amex: Joi.string().creditcard(),
+  token: Joi.string().alphanum()
+};
+```
+
+In addition to types, there are ways to add logic to your schema. Strings and arrays can be checked for length, numbers can be assigned range values, and even given logical operators like ```with``` and ```xor```. 
+
+```javascript
+var Joi = require('joi');
+
+//logical operators are tied to an object, hence the functions chained at the end.
+var schema = {
+  email: Joi.string().email(),
+  mobile: Joi.string(),
+  firstName: Joi.string(),
+  lastName: Joi.string()
+}.xor('email', 'mobile') //xor will make sure there is only one of the options passed in as a parameter
+.with('firstName', 'lastName');  //with takes two values, 'key' (string) and 'peers' (string or array of strings)
+```
+For this exercise, create a server that contains a ```POST``` endpoint that only accepts a JSON object that mathes the following rules: 
+
+1. 'isGuest' is required boolean, and if it's false a string 'username' is required. 
+2. 'password' is alphanumeric, and should only be there if 'accessToken' isn't available.
+3. Any additional parameters should be allowed, but not checked
+
+Ultimately, the schema object should resemble this, but with Joi types:
+
+```javascript
+var schema = {
+  isGuest://boolean,
+  username://string,
+  accessToken://alphanumeric,
+  password://alphanumeric
+};
+```
 
 -----------------------------------------------------------------
 ##HINTS
 
-Create a server that listens on port 8080 with the following code:
+A route can have a config with a 'validate' key that specifies the validation rules for that route, like this:
 
-```js
+ 
 
-var routeConfig = {
-    path: '/a/path/',
-    method: 'POST',
-    handler: myHandler,
-    config: {
-        validate: {
-           payload: Joi.object({
-                username: Joi.string(),
-                password: Joi.string().alphanum(),
-                accessToken: Joi.string().alphanum(),
-                birthyear: Joi.number().integer().min(1900).max(2013),
-                email: Joi.string().email()
-           })
-           .options({allowUnknown: true})
-           .with('username', 'birthyear')
-           .without('password', 'accessToken')
-        }
-    }
-}
-```
 
-Route information can be found in the Hapi directory
-`node_modules/hapi/API.md#route-configuration`
 
-Joi information can be found in
-`node_modules/hapi/node_modules/joi/README.md`
+The API docs contain more information about (Routes)[`http://hapijs.com/api#route-configuration`], and (Joi)['https://github.com/hapijs/joi/blob/master/README.md']
