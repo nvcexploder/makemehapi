@@ -13,7 +13,7 @@ var schema = {
 
 ```
 
-Joi provides a number of built-in objects, like ```string```, and ```number``` above. It also provides ```object```, ```date```, ```array```, and other logical based operators. Some types even provide commonly used objects, like this:
+Joi provides a number of built-in objects, like ```string```, and ```number``` above. It also provides ```object```, ```date```, ```array```. Some types even provide commonly used objects, like this:
 
 ```javascript
 var Joi = require('joi');
@@ -39,7 +39,7 @@ var schema = {
 }.xor('email', 'mobile') //xor will make sure there is only one of the options passed in as a parameter
 .with('firstName', 'lastName');  //with takes two values, 'key' (string) and 'peers' (string or array of strings)
 ```
-For this exercise, create a server that contains a ```POST``` endpoint that only accepts a JSON object that mathes the following rules: 
+For this exercise, create a server that contains a ```POST``` endpoint that only accepts a JSON object that matches the following rules: 
 
 1. 'isGuest' is required boolean, and if it's false a string 'username' is required. 
 2. 'password' is alphanumeric, and should only be there if 'accessToken' isn't available.
@@ -61,7 +61,7 @@ var schema = {
 
 A route can have a config with a 'validate' key that specifies the validation rules for that route, like this:
 
- 
+
 
 
 
